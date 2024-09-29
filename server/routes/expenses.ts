@@ -8,6 +8,8 @@ type Expense = {
     amount: number
 }
 
+
+
 const expenseSchema = z.object({
     title : z.string().min(3).max(100),
     amount : z.number().int().positive(),
@@ -31,4 +33,7 @@ export const expenseRoutes = new Hono()
     const id = Number.parseInt(c.req.param("id"));
     const expense = {id: id};
     return c.text("deleted: " + {expense});
+})
+.get('/total', (c) => {
+    return c.json({total: 3000});
 })
