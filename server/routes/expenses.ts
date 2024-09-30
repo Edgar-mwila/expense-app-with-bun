@@ -14,9 +14,13 @@ const expenseSchema = z.object({
 })
 
 const expenses: Expense[] = [
-    { id: 1, title: "Groceries", amount: 50.00 },
-    { id: 2, title: "Gas", amount: 30.00 }
+    { id: 1, title: "Groceries", amount: 5000.00 },
+    { id: 2, title: "Gas", amount: 800.00 }
 ];
+
+const totalAmount = expenses.reduce((acc, member) => {
+    return acc + (member.amount || 0);
+  }, 0)
 
 export const expenseRoutes = new Hono()
 .get('/', (c) => {
@@ -43,5 +47,5 @@ export const expenseRoutes = new Hono()
     return c.text("deleted: " + {expense});
 })
 .get('/total', (c) => {
-    return c.json({total: 3000});
+    return c.json({total: totalAmount});
 })

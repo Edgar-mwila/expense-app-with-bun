@@ -77,7 +77,7 @@ function AllExpenses() {
 
     return (
       <div className='max-w-3xl m-auto'>
-        {isPending ? 'Loading....' : <TableComp />}
+        <TableComp />
       </div>
     )
 }
