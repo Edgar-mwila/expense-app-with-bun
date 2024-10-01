@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
+import { getUser } from "../kinde";
 
 type Expense = {
     id: number,
@@ -23,10 +24,10 @@ const totalAmount = expenses.reduce((acc, member) => {
   }, 0)
 
 export const expenseRoutes = new Hono()
-.get('/', (c) => {
+.get('/', getUser, (c) => {
     return c.json({ expenses: expenses })
 })
-.post('/', zValidator("json", expenseSchema), async (c) => {
+.post('/', getUser, zValidator("json", expenseSchema), async (c) => {
     const data = c.req.valid("json");
     const expense = expenseSchema.parse(data);
     const newExpense: Expense = {
@@ -36,16 +37,16 @@ export const expenseRoutes = new Hono()
     expenses.push(newExpense);
     return c.json(newExpense)
 })
-.get('/:id{[0-9]+}', (c) => {
+.get('/:id{[0-9]+}', getUser, (c) => {
     const id = Number.parseInt(c.req.param("id"));
     const expense = {id: id};
     return c.json(expense);
 })
-.delete('/:id{[0-9]+}', (c) => {
+.delete('/:id{[0-9]+}', getUser, (c) => {
     const id = Number.parseInt(c.req.param("id"));
     const expense = {id: id};
     return c.text("deleted: " + {expense});
 })
-.get('/total', (c) => {
+.get('/total', getUser, (c) => {
     return c.json({total: totalAmount});
 })
