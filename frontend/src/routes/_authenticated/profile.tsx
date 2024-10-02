@@ -13,7 +13,7 @@ function Profile() {
   return (
     <div>
       <p>Hello {data.user.family_name}</p>
-      <a href="/api/logout">Logout</a>
+      <a href="/api/auth/logout">Logout</a>
     </div>
   )
 }

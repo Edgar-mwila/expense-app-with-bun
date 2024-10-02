@@ -6,13 +6,13 @@ const Login = () => {
   return (
     <div>
       <p>You have to log in.</p>
-      <a href="/api/login">Login</a>
+      <a href="/api/auth/login">Login</a>
     </div>
   )
 }
 
 const Component = () => {
-    const user = Route.useRouteContext();
+    const user = Route.useRouteContext().user;
     if (!user) {
       return <Login />
     }

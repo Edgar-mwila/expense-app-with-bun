@@ -17,6 +17,7 @@ import { Input } from '../../components/ui/input'
 import { useState } from 'react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { CheckCircledIcon } from '@radix-ui/react-icons'
+import { DatePickerDemo } from '@/components/ui/datePicker'
 
 const formSchema = z.object({
   title: z
@@ -30,6 +31,7 @@ const formSchema = z.object({
   amount: z.number().int().positive({
     message: 'Amount must be positive.',
   }),
+  createdAt: z.date(),
 })
 
 export const Route = createFileRoute('/_authenticated/create-expense')({
@@ -45,6 +47,7 @@ function CreateExpense() {
     defaultValues: {
       title: '',
       amount: 0,
+      createdAt: new Date(),
     },
   })
 
@@ -53,7 +56,11 @@ function CreateExpense() {
     setShowSuccessAlert(false)
     try {
       const res = await api.expenses.$post({
-        json: values,
+        json: {
+          title: values.title,
+          amount: values.amount.toString(),
+          createdAt: values.createdAt,
+        },
       })
       if (!res.ok) {
         throw new Error('server error')
@@ -121,6 +128,21 @@ function CreateExpense() {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="createdAt"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Amount</FormLabel>
+                <FormControl>
+                  <DatePickerDemo />
+                </FormControl>
+                <FormDescription>Date th item was purchased.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Submitting...' : 'Submit'}
           </Button>

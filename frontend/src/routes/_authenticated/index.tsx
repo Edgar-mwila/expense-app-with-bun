@@ -36,7 +36,7 @@ function App() {
         <CardTitle>Total Expenses</CardTitle>
         <CardDescription>The total expenses.</CardDescription>
       </CardHeader>
-      <CardContent>{isPending ? 'Loading...' : data.total}</CardContent>
+      <CardContent>{isPending ? 'Loading...' : data.total.total ? data.total.total : 0}</CardContent>
     </Card>
   )
 }
