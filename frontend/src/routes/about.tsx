@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -50,11 +50,10 @@ function AboutPage() {
             <CardContent>
               <ul className="list-disc pl-5 space-y-2">
                 <li>Real-time expense tracking</li>
-                <li>Customizable budget categories</li>
-                <li>Bill reminders and recurring expenses</li>
-                <li>Multi-currency support</li>
                 <li>Secure cloud sync across devices</li>
-                <li>Detailed financial reports and projections</li>
+                <li>Easy to use creation of expenses</li>
+                <li>Deletion of expenses created in error</li>
+                <li>Secure database for storage</li>
               </ul>
             </CardContent>
           </Card>
@@ -67,7 +66,6 @@ function AboutPage() {
             <CardContent>
               <ol className="list-decimal pl-5 space-y-2">
                 <li>Sign up for a free account</li>
-                <li>Set up your income sources and budget categories</li>
                 <li>Start logging your daily expenses</li>
                 <li>Review insights and adjust your spending habits</li>
                 <li>Watch your savings grow!</li>
@@ -106,10 +104,10 @@ function AboutPage() {
         </CardContent>
         <CardFooter className="flex justify-center">
           <Button size="lg" className="mr-4">
-            <PiggyBank className="mr-2" /> Start Free Trial
+            <PiggyBank className="mr-2" /> <Link to='/expenses'>Start Tracking</Link>
           </Button>
           <Button variant="outline" size="lg">
-            Learn More
+            <Link to='/create-expense'>Start Spending</Link>
           </Button>
         </CardFooter>
       </Card>
