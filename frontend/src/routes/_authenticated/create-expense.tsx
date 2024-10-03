@@ -2,8 +2,10 @@ import { createFileRoute } from '@tanstack/react-router'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { api } from '@/lib/api'
-import { Button } from '../../components/ui/button'
+import { api, getAllExpensesQueryOptions } from '@/lib/api';
+import { useQueryClient } from '@tanstack/react-query';
+import { Button } from '../../components/ui/button';
+import { toast } from 'sonner';
 import {
   Form,
   FormControl,
@@ -17,7 +19,7 @@ import { Input } from '../../components/ui/input'
 import { useState } from 'react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { CheckCircledIcon } from '@radix-ui/react-icons'
-import { DatePickerDemo } from '@/components/ui/datePicker'
+import { DatePicker } from '@/components/ui/datePicker'
 
 const formSchema = z.object({
   title: z
@@ -31,7 +33,7 @@ const formSchema = z.object({
   amount: z.number().int().positive({
     message: 'Amount must be positive.',
   }),
-  createdAt: z.date(),
+  date: z.date(),
 })
 
 export const Route = createFileRoute('/_authenticated/create-expense')({
@@ -39,6 +41,7 @@ export const Route = createFileRoute('/_authenticated/create-expense')({
 })
 
 function CreateExpense() {
+  const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccessAlert, setShowSuccessAlert] = useState(false)
 
@@ -47,7 +50,7 @@ function CreateExpense() {
     defaultValues: {
       title: '',
       amount: 0,
-      createdAt: new Date(),
+      date: new Date(),
     },
   })
 
@@ -55,22 +58,34 @@ function CreateExpense() {
     setIsSubmitting(true)
     setShowSuccessAlert(false)
     try {
+      const existingExpenses = await queryClient.ensureQueryData(getAllExpensesQueryOptions);
       const res = await api.expenses.$post({
         json: {
           title: values.title,
           amount: values.amount.toString(),
-          createdAt: values.createdAt,
+          date: values.date.toISOString(),
         },
       })
       if (!res.ok) {
         throw new Error('server error')
       }
+      const newExpense = await res.json();
+      queryClient.setQueryData(getAllExpensesQueryOptions.queryKey, ({
+        ...existingExpenses,
+        expenses: [newExpense, ...existingExpenses.expenses],
+      }))
       // Reset form after successful submission
       form.reset()
-      setShowSuccessAlert(true)
+      toast("Success", {
+        description: "Expense created Successfully",
+      })
       // Hide the alert after 5 seconds
       setTimeout(() => setShowSuccessAlert(false), 5000)
     } catch (error) {
+      toast("Error", {
+        description: "Failed to create Expense",
+    
+      })
       console.error('Error submitting form:', error)
       // Handle error (e.g., show error message to user)
     } finally {
@@ -79,12 +94,13 @@ function CreateExpense() {
   }
 
   return (
-    <div className="max-w-3xl m-auto items-center">
+    <div className=" m-auto items-center">
       {showSuccessAlert && (
         <Alert className="mb-4">
           <CheckCircledIcon className="h-4 w-4" />
           <AlertTitle>Success</AlertTitle>
           <AlertDescription>Expense added successfully!</AlertDescription>
+          <a href='/expenses'>Check List</a>
         </Alert>
       )}
       <Form {...form}>
@@ -130,14 +146,19 @@ function CreateExpense() {
           />
           <FormField
             control={form.control}
-            name="createdAt"
+            name="date"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Amount</FormLabel>
+                <FormLabel>Date</FormLabel>
                 <FormControl>
-                  <DatePickerDemo />
+                  <DatePicker 
+                    date={field.value}
+                    onDateChange={(date) => field.onChange(date)}
+                    name="date"
+                    aria-label="Select date"
+                  />
                 </FormControl>
-                <FormDescription>Date th item was purchased.</FormDescription>
+                <FormDescription>Date the item was purchased.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

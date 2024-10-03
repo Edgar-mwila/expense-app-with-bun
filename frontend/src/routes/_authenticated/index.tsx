@@ -6,27 +6,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { api } from '../../lib/api'
+import { getTotalExpensesCostOptions } from '../../lib/api'
 import { useQuery } from '@tanstack/react-query'
 
 export const Route = createFileRoute('/_authenticated/')({
   component: App,
 })
 
-async function fetchTotal() {
-  const res = await api.expenses['total'].$get()
-  if (!res.ok) {
-    throw new Error('server error')
-  }
-  const data = await res.json()
-  return data
-}
-
 function App() {
-  const { isPending, error, data } = useQuery({
-    queryKey: ['get-total'],
-    queryFn: fetchTotal,
-  })
+  const { isPending, error, data } = useQuery(getTotalExpensesCostOptions);
 
   if (error) return 'An error occured: ' + error.message
 
